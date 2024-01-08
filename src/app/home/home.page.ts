@@ -21,7 +21,7 @@ export class HomePage {
   }
 
   loadMovies() {
-    this.movieService.getTopRatedMovies().subscribe((movies) => {
+    this.movieService.getMovieDetails('1029575').subscribe((movies) => {
       console.log(movies);
     });
   }

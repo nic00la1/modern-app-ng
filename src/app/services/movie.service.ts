@@ -1,5 +1,8 @@
+import { ApiResult, MovieResult } from './interfaces';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -13,13 +16,15 @@ export class MovieService {
 
   constructor() {}
 
-  getTopRatedMovies(page = 1) {
-    return this.http.get(
+  getTopRatedMovies(page = 1): Observable<ApiResult> {
+    return this.http.get<ApiResult>(
       `${BASE_URL}/movie/popular?page=${page}&api_key=${API_KEY}`
     );
   }
 
-  getMovieDetails(id: string) {
-    return this.http.get(`${BASE_URL}/movie/${id}?api_key=${API_KEY}`);
+  getMovieDetails(id: string): Observable<MovieResult> {
+    return this.http.get<MovieResult>(
+      `${BASE_URL}/movie/${id}?api_key=${API_KEY}`
+    );
   }
 }
