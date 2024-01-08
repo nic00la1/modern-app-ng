@@ -2,7 +2,7 @@ import { ApiResult, MovieResult } from './interfaces';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import { Observable, delay } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -17,9 +17,11 @@ export class MovieService {
   constructor() {}
 
   getTopRatedMovies(page = 1): Observable<ApiResult> {
-    return this.http.get<ApiResult>(
-      `${BASE_URL}/movie/popular?page=${page}&api_key=${API_KEY}`
-    );
+    return this.http
+      .get<ApiResult>(
+        `${BASE_URL}/movie/popular?page=${page}&api_key=${API_KEY}`
+      )
+      .pipe(delay(5000));
   }
 
   getMovieDetails(id: string): Observable<MovieResult> {

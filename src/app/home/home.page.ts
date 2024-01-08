@@ -4,6 +4,11 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
+  IonList,
+  IonItem,
+  IonSkeletonText,
+  IonAvatar,
+  IonAlert,
   InfiniteScrollCustomEvent,
 } from '@ionic/angular/standalone';
 import { MovieService } from '../services/movie.service';
@@ -15,15 +20,27 @@ import { MovieResult } from '../services/interfaces';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonItem,
+    IonSkeletonText,
+    IonAvatar,
+    IonAlert,
+  ],
 })
 export class HomePage {
   private movieService = inject(MovieService);
   private currentPage = 1;
-  private error = null;
-  private isLoading = false;
+  public error = null;
+  public isLoading = false;
   private movies: MovieResult[] = [];
   public imageBaseUrl = 'https://image.tmdb.org/t/p';
+
+  public dummyArray = new Array(5); // create dummy array to loop over in template
 
   constructor() {
     this.loadMovies();
