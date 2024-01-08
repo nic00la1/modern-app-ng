@@ -1,20 +1,103 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { Component, inject } from '@angular/core';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonList,
+  IonItem,
+  IonSkeletonText,
+  IonAvatar,
+  IonAlert,
+  IonLabel,
+  IonBadge,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  InfiniteScrollCustomEvent,
+} from '@ionic/angular/standalone';
+import { MovieService } from '../../services/movie.service';
+import { catchError, finalize } from 'rxjs';
+import { MovieResult } from '../../services/interfaces';
+
+import { DatePipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home-defer',
-  templateUrl: './home-defer.page.html',
-  styleUrls: ['./home-defer.page.scss'],
+  templateUrl: 'home-defer.page.html',
+  styleUrls: ['home-defer.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonItem,
+    IonSkeletonText,
+    IonAvatar,
+    IonAlert,
+    IonLabel,
+    DatePipe,
+    RouterModule,
+    IonBadge,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
+  ],
 })
-export class HomeDeferPage implements OnInit {
+export class HomeDeferPage {
+  private movieService = inject(MovieService);
+  private currentPage = 1;
+  public error = null;
+  public isLoading = false;
+  public movies: MovieResult[] = [];
+  public imageBaseUrl = 'https://image.tmdb.org/t/p';
 
-  constructor() { }
+  public dummyArray = new Array(5); // create dummy array to loop over in template
 
-  ngOnInit() {
+  constructor() {
+    this.loadMovies();
   }
 
+  loadMovies(event?: InfiniteScrollCustomEvent) {
+    //
+    this.error = null;
+
+    if (!event) {
+      this.isLoading = true; // show loading spinner when loading first page
+    }
+
+    // call movie service to get top rated movies
+    this.movieService
+      .getTopRatedMovies(this.currentPage)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          if (event) {
+            event.target.complete();
+          }
+        }), // hide loading spinner when observable completes
+        catchError((err: any) => {
+          console.log(err);
+
+          this.error = err.error.status_message;
+          return [];
+        }) // catch error and return empty array
+      )
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+
+          this.movies.push(...res.results);
+          if (event) {
+            event.target.disabled = res.total_pages === this.currentPage; // disable infinite scroll when there are no more pages to load
+          }
+        },
+      });
+  }
+
+  loadMore(event: InfiniteScrollCustomEvent) {
+    this.currentPage++;
+    this.loadMovies(event);
+  }
 }

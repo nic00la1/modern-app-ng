@@ -56,6 +56,7 @@ export class DetailsPage {
   private movieService = inject(MovieService);
   public imageBaseUrl = 'https://image.tmdb.org/t/p/';
   public movie: WritableSignal<MovieResult | null> = signal(null);
+  isLoading: any;
 
   @Input() // Load the movie details when the id changes through the URL :id parameter
   set id(movieId: string) {
