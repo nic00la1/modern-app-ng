@@ -62,6 +62,7 @@ export class DetailsPage {
     // This is just to show Signal usage
     // You could also just assign the value to a variable directly
     this.movieService.getMovieDetails(movieId).subscribe((movie) => {
+      console.log(movie); // Log the movie details to the console
       this.movie.set(movie);
     });
   }
