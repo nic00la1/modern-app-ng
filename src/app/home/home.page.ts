@@ -9,11 +9,16 @@ import {
   IonSkeletonText,
   IonAvatar,
   IonAlert,
+  IonLabel,
+  IonBadge,
   InfiniteScrollCustomEvent,
 } from '@ionic/angular/standalone';
 import { MovieService } from '../services/movie.service';
 import { catchError, finalize } from 'rxjs';
 import { MovieResult } from '../services/interfaces';
+
+import { DatePipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -30,6 +35,10 @@ import { MovieResult } from '../services/interfaces';
     IonSkeletonText,
     IonAvatar,
     IonAlert,
+    IonLabel,
+    DatePipe,
+    RouterModule,
+    IonBadge,
   ],
 })
 export class HomePage {
