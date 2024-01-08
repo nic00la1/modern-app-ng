@@ -7,7 +7,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home-defer',
+    redirectTo: 'home',
     pathMatch: 'full',
   },
   {
