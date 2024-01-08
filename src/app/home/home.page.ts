@@ -8,6 +8,7 @@ import {
 } from '@ionic/angular/standalone';
 import { MovieService } from '../services/movie.service';
 import { catchError, finalize } from 'rxjs';
+import { MovieResult } from '../services/interfaces';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,7 @@ export class HomePage {
   private currentPage = 1;
   private error = null;
   private isLoading = false;
-  private movies = [];
+  private movies: MovieResult[] = [];
   public imageBaseUrl = 'https://image.tmdb.org/t/p';
 
   constructor() {
@@ -29,12 +30,14 @@ export class HomePage {
   }
 
   loadMovies(event?: InfiniteScrollCustomEvent) {
+    //
     this.error = null;
 
     if (!event) {
-      this.isLoading = true;
+      this.isLoading = true; // show loading spinner when loading first page
     }
 
+    // call movie service to get top rated movies
     this.movieService
       .getTopRatedMovies(this.currentPage)
       .pipe(
@@ -43,15 +46,24 @@ export class HomePage {
           if (event) {
             event.target.complete();
           }
-        }),
+        }), // hide loading spinner when observable completes
         catchError((err: any) => {
           console.log(err);
 
           this.error = err.error.status_message;
           return [];
-        })
+        }) // catch error and return empty array
       )
-      .subscribe();
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+
+          this.movies.push(...res.results);
+          if (event) {
+            event.target.disabled = res.total_pages === this.currentPage; // disable infinite scroll when there are no more pages to load
+          }
+        },
+      });
   }
 
   loadMore(event: InfiniteScrollCustomEvent) {}
